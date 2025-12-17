@@ -1,5 +1,5 @@
 package com.heroku.java;
-import java.util.random;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -37,10 +37,11 @@ return random.ints(leftLimit, rightLimit + 1)
 .limit(10)
 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
 .toString();
+
 }
 
     @GetMapping("/databaseInput")
-    String database(Map<String, Object> model) {
+    String databaseInput(Map<String, Object> model) {
         try (Connection connection = dataSource.getConnection()) {
             final var statement = connection.createStatement();
 //            statement.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
