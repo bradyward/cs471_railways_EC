@@ -65,7 +65,7 @@ return random.ints(leftLimit, rightLimit + 1)
         }
     }
     @GetMapping("/databaseOld")
-    String database(Map<String, Object> model) {
+    String databaseOld(Map<String, Object> model) {
         try (Connection connection = dataSource.getConnection()) {
             final var statement = connection.createStatement();
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
