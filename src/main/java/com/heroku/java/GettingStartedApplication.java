@@ -51,8 +51,9 @@ return random.ints(leftLimit, rightLimit + 1)
 		statement.executeUpdate("INSERT INTO table_timestamp_and_random_string VALUES (now(), '" + rs + "')");
 	System.out.println("BRADY LOG");
 
-            final var resultSet = statement.executeQuery("SELECT tick, random_string FROM table_timestamp_and_random_string");
+            final var resultSet = statement.executeQuery("SELECT tick FROM table_timestamp_and_random_string");
             final var output = new ArrayList<>();
+	    System.out.println(rs);
             while (resultSet.next()) {
                 output.add("Read from DB: " + resultSet.getTimestamp("tick")+ rs);
             }
