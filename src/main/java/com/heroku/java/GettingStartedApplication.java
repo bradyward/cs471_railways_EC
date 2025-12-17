@@ -1,4 +1,5 @@
 package com.heroku.java;
+import java.util.random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -26,14 +27,28 @@ public class GettingStartedApplication {
         return "index";
     }
 
+    String getRandomString() {
+	    int leftLimit = 48; // '0'
+int rightLimit = 122; // 'z'
+Random random = new Random();
+
+return random.ints(leftLimit, rightLimit + 1)
+.filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)) // Alphanumeric filter
+.limit(10)
+.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+.toString();
+}
+
     @GetMapping("/database")
     String database(Map<String, Object> model) {
         try (Connection connection = dataSource.getConnection()) {
             final var statement = connection.createStatement();
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-            statement.executeUpdate("INSERT INTO ticks VALUES (now())");
+//            statement.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
+//            statement.executeUpdate("INSERT INTO ticks VALUES (now())");
+		statement.executeUpdate("CREATE TABLE IF NOT EXISTS table_timestamp_and_random_string (tick timestamp, random_string varchar(50))");
+		statement.executeUpdate("INSERT INTO table_timestamp_and_random_string VALUES (now(), '" + getRandomString() + "')");
 
-            final var resultSet = statement.executeQuery("SELECT tick FROM ticks");
+            final var resultSet = statement.executeQuery("SELECT tick FROM table_timestamp_and_random_string");
             final var output = new ArrayList<>();
             while (resultSet.next()) {
                 output.add("Read from DB: " + resultSet.getTimestamp("tick"));
