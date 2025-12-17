@@ -40,14 +40,15 @@ return random.ints(leftLimit, rightLimit + 1)
 
 }
 
-    @GetMapping("/databaseInput")
-    String databaseInput(Map<String, Object> model) {
+    @GetMapping("/database")
+    String database(Map<String, Object> model) {
         try (Connection connection = dataSource.getConnection()) {
             final var statement = connection.createStatement();
 //            statement.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
 //            statement.executeUpdate("INSERT INTO ticks VALUES (now())");
 		statement.executeUpdate("CREATE TABLE IF NOT EXISTS table_timestamp_and_random_string (tick timestamp, random_string varchar(50))");
 		statement.executeUpdate("INSERT INTO table_timestamp_and_random_string VALUES (now(), '" + getRandomString() + "')");
+	System.out.println("BRADY LOG");
 
             final var resultSet = statement.executeQuery("SELECT tick, random_string FROM table_timestamp_and_random_string");
             final var output = new ArrayList<>();
@@ -63,7 +64,7 @@ return random.ints(leftLimit, rightLimit + 1)
             return "error";
         }
     }
-    @GetMapping("/database")
+    @GetMapping("/databaseOld")
     String database(Map<String, Object> model) {
         try (Connection connection = dataSource.getConnection()) {
             final var statement = connection.createStatement();
