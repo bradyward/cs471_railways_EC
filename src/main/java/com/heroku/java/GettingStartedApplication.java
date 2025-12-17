@@ -42,30 +42,40 @@ return random.ints(leftLimit, rightLimit + 1)
 
     @GetMapping("/database")
     String database(Map<String, Object> model) {
-        try (Connection connection = dataSource.getConnection()) {
-            final var statement = connection.createStatement();
-//            statement.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-//            statement.executeUpdate("INSERT INTO ticks VALUES (now())");
-		statement.executeUpdate("CREATE TABLE IF NOT EXISTS table_timestamp_and_random_string (tick timestamp, random_string varchar(50))");
-		String rs = getRandomString();
-		statement.executeUpdate("INSERT INTO table_timestamp_and_random_string VALUES (now(), '" + rs + "')");
-	System.out.println("BRADY LOG");
+    try (Connection connection = dataSource.getConnection()) {
+        final var statement = connection.createStatement();
+        // Create table if it doesn't exist and insert a record with timestamp and random string
+        statement.executeUpdate("CREATE TABLE IF NOT EXISTS table_timestamp_and_random_string (tick timestamp, random_string varchar(50))");
 
-            final var resultSet = statement.executeQuery("SELECT tick FROM table_timestamp_and_random_string");
-            final var output = new ArrayList<>();
-	    System.out.println(rs);
-            while (resultSet.next()) {
-                output.add("Read from DB: " + resultSet.getTimestamp("tick")+ rs);
-            }
+        // Generate random string and insert into the table
+        String rs = getRandomString();
+        statement.executeUpdate("INSERT INTO table_timestamp_and_random_string VALUES (now(), '" + rs + "')");
 
-            model.put("records", output);
-            return "database";
+        // Retrieve both tick and random_string from the database
+        final var resultSet = statement.executeQuery("SELECT tick, random_string FROM table_timestamp_and_random_string");
+        final var output = new ArrayList<String>();
 
-        } catch (Throwable t) {
-            model.put("message", t.getMessage());
-            return "error";
+        // Iterate through the result set
+        while (resultSet.next()) {
+            // Retrieve both the tick and random_string for each row
+            String tick = resultSet.getTimestamp("tick").toString();
+            String randomString = resultSet.getString("random_string");
+
+            // Add the result to the output list with both the tick and random string
+            output.add("Read from DB: " + tick + " " + randomString);
         }
+
+        // Put the output into the model to display it
+        model.put("records", output);
+        return "database";
+
+    } catch (Throwable t) {
+        model.put("message", t.getMessage());
+        return "error";
     }
+}
+
+
     @GetMapping("/databaseOld")
     String databaseOld(Map<String, Object> model) {
         try (Connection connection = dataSource.getConnection()) {
